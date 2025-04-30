@@ -1,0 +1,37 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Highlight efekti oluştur
+local function createHighlight(player)
+    if player ~= LocalPlayer and player.Character then
+        local highlight = Instance.new("Highlight")
+        highlight.Adornee = player.Character
+        highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Sarı renk
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Beyaz kenar
+        highlight.FillTransparency = 0.5
+        highlight.OutlineTransparency = 0
+        highlight.Parent = player.Character
+    end
+end
+
+-- Mevcut oyuncuları highlight'la
+for _, player in pairs(Players:GetPlayers()) do
+    createHighlight(player)
+end
+
+-- Yeni oyuncu eklendiğinde highlight'la
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        createHighlight(player)
+    end)
+end)
+
+-- Oyuncu karakteri yenilendiğinde highlight'ı güncelle
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        local highlight = player.Character:FindFirstChildOfClass("Highlight")
+        if highlight then
+            highlight:Destroy()
+        end
+    end
+end)
